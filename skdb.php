@@ -13,6 +13,10 @@ class sksql
 	private $select_sql;
 	private $fullquery;
 	
+	/* for sql_insert part */
+	private $insert_array;
+	/* end here */
+	
 	/*
 	public function __construct($table,$sql_param)
 	{
@@ -30,13 +34,39 @@ class sksql
 		$this->result  = mysql_query($this->query) or die(mysql_error());
 	}
 	 */
-	 
+	
 	public function __construct($table)
 	{
 		$this->table = $table;
 		$this->select_sql = "SELECT * FROM $this->table";
 		include 'conf.php';
-	}	 
+	}
+	
+	public function insertadd($sql_param)
+	{
+		$this->insert_array[] = $sql_param;
+	}
+	
+	public function insert()
+	{
+		for ($i=0; $i < count($this->insert_array); $i++) 
+		{
+			$content = $this->insert_array[$i];
+			$content_left = explode("=", $content); /* extract name=mike */
+			$field_name[] = $content_left[0]; /* extract name only */
+			$values[] = "'" .$content_left[1]. "'"; /* extract mike only */
+		}
+		
+		
+		//$this->query = "INSERT INTO $this->table (FirstName, LastName, Age) VALUES ('Peter', 'Griffin',35)"; //echo $this->query ."<br>";
+		
+		if(strlen($this->fullquery)>0)
+			$this->query = $this->fullquery;
+			
+		//$this->result  = mysql_query($this->query) or die(mysql_error());
+		//echo implode(",", $field_name);
+		echo "INSERT INTO $this->table (".implode(",", $field_name).") VALUES (".implode(",", $values).")";
+	}
 	
 	public function fullquery($sql_param)
 	{
