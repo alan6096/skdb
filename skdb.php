@@ -16,6 +16,7 @@ class sksql
 	/* for sql_insert part */
 	private $insert_array;
 	/* end here */
+	private $update_array;
 	
 	/*
 	public function __construct($table,$sql_param)
@@ -42,6 +43,48 @@ class sksql
 		include 'conf.php';
 	}
 	
+	public function updateadd($sql_param)
+	{
+		$this->update_array[] = $sql_param;
+	}
+	
+	public function update()
+	{
+		for ($i=0; $i < count($this->whereadd_array); $i++) 
+		{
+			$content = $this->whereadd_array[$i];
+			if($i==0)
+				$where_add_sql = "where $content";
+			else
+				$where_add_sql .= " and $content";
+		}
+		
+		for ($i=0; $i < count($this->update_array); $i++) 
+		{
+			$content[$i] = $this->update_array[$i];
+		}
+		
+		echo $content[0];
+
+		$this->query = "UPDATE $this->table SET ".implode(",", $this->update_array)." $where_add_sql";
+		
+		echo $this->query;
+		if(strlen($this->fullquery)>0)
+			$this->query = $this->fullquery;
+			
+		mysql_query($this->query) or die(mysql_error());
+	}
+	
+	public function delete()
+	{		
+		$this->query = "DELETE FROM $this->table WHERE id=$this->id";
+		
+		if(strlen($this->fullquery)>0)
+			$this->query = $this->fullquery;
+			
+		mysql_query($this->query) or die(mysql_error());
+	}
+	
 	public function insertadd($sql_param)
 	{
 		$this->insert_array[] = $sql_param;
@@ -56,16 +99,14 @@ class sksql
 			$field_name[] = $content_left[0]; /* extract name only */
 			$values[] = "'" .$content_left[1]. "'"; /* extract mike only */
 		}
-		
-		
-		//$this->query = "INSERT INTO $this->table (FirstName, LastName, Age) VALUES ('Peter', 'Griffin',35)"; //echo $this->query ."<br>";
-		
+
+		$this->query = "INSERT INTO $this->table (".implode(",", $field_name).") VALUES (".implode(",", $values).")";
+				
 		if(strlen($this->fullquery)>0)
 			$this->query = $this->fullquery;
 			
-		//$this->result  = mysql_query($this->query) or die(mysql_error());
+		mysql_query($this->query) or die(mysql_error());
 		//echo implode(",", $field_name);
-		echo "INSERT INTO $this->table (".implode(",", $field_name).") VALUES (".implode(",", $values).")";
 	}
 	
 	public function fullquery($sql_param)
