@@ -23,4 +23,4 @@ $(document).ready(function()
 <body>
 <div id="content" class='CSSTableGenerator'></div>	
 </body>
-</html>
+</html>t
